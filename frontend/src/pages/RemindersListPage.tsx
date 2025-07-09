@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { getReminders } from '../api/client';
 import type { Reminder } from '../types/app';
 import ReminderCard from '../components/Remindercard';
