@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 
-const WS_URL = 'ws://localhost:8000/ws';
+const WS_URL = 'https://ai-powered-remainder-setting.onrender.com/ws'; // Update with your WebSocket URL
 
 export const useWebSocket = (onMessage: (data: any) => void) => {
   const socketRef = useRef<WebSocket | null>(null);

@@ -13,7 +13,7 @@ app = FastAPI()
 # CORS configuration to allow frontend (localhost:5173 for Vite)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["https://ai-powered-remainder-setting.onrender.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
