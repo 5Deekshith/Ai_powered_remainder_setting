@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import type { Message, NotificationToast } from './types/app';
 import { useWebSocket } from '../../frontend/src/hooks/useWebSocket';
