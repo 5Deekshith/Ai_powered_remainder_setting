@@ -17,7 +17,9 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
           isUser ? 'bg-wa-msg-user' : 'bg-wa-msg-bot'
         }`}
       >
-        <p className="text-sm text-slate-800">{message.text}</p>
+        <p className="text-sm text-slate-800 whitespace-pre-wrap font-sans-serif">
+          {message.text}
+        </p>
         <p className="text-xs text-right text-slate-400 mt-1">{time}</p>
       </div>
     </div>

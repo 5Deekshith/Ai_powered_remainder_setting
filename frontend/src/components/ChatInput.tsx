@@ -1,5 +1,5 @@
 import { Paperclip, Send } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface ChatInputProps {
   onSendMessage: (text: string) => void;
@@ -7,17 +7,37 @@ interface ChatInputProps {
 
 const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
   const [input, setInput] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (e?: React.FormEvent | React.MouseEvent) => {
+    if (e) e.preventDefault();
     if (input.trim()) {
-      onSendMessage(input.trim());
+      onSendMessage(input);
       setInput('');
+      setIsFocused(false);
+      textareaRef.current?.blur();
     }
   };
 
+  const handleFocus = () => {
+    setIsFocused(true);
+  };
+
+  // 🔁 Collapse textarea if clicked outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+        setIsFocused(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
-    <div className="bg-gray-100 px-4 py-2 flex items-center">
+    <div ref={wrapperRef} className="bg-gray-100 px-4 py-2 flex items-center">
       <Paperclip className="text-gray-400 cursor-pointer" />
       <div className="flex-grow mx-4 relative">
         <div className="w-full bg-white rounded-md p-2 shadow-inner">
@@ -26,29 +46,27 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
             <span>32y</span>
             <span>PAT123456</span>
           </div>
-            <input
-            type="text"
-            className="w-full px-4 py-2 border-none focus:outline-none placeholder-gray-400 bg-transparent mt-1"
+          <textarea
+            ref={textareaRef}
+            rows={isFocused ? undefined : 2}
+            style={isFocused ? { height: '50vh' } : { height: 'auto' }}
+            className="w-full px-4 py-2 border-none focus:outline-none placeholder-gray-400 bg-transparent mt-1 font-san-sarif text-sm"
             placeholder="WorkList / Reminders / Patient info"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-              handleSubmit(e as any);
-              }
-            }}
-            />
+            onFocus={handleFocus}
+          />
         </div>
       </div>
-      {input ? (
-        <button onClick={handleSubmit} className="bg-green-500 rounded-md p-2 text-white">
-          <Send />
-        </button>
-      ) : (
-        <button disabled className="bg-green-500 rounded-md p-2 text-white opacity-50 cursor-not-allowed">
-          <Send />
-        </button>
-      )}
+      <button
+        onClick={handleSubmit}
+        className={`bg-green-500 rounded-md p-2 text-white ${
+          input.trim() ? '' : 'opacity-50 cursor-not-allowed'
+        }`}
+        disabled={!input.trim()}
+      >
+        <Send />
+      </button>
     </div>
   );
 };
