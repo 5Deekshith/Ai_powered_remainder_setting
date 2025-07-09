@@ -26,15 +26,18 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
             <span>32y</span>
             <span>PAT123456</span>
           </div>
-          <form onSubmit={handleSubmit} className="mt-1">
             <input
-              type="text"
-              className="w-full px-4 py-2 border-none focus:outline-none placeholder-gray-400 bg-transparent"
-              placeholder="WorkList / Reminders / Patient info"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
+            type="text"
+            className="w-full px-4 py-2 border-none focus:outline-none placeholder-gray-400 bg-transparent mt-1"
+            placeholder="WorkList / Reminders / Patient info"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+              handleSubmit(e as any);
+              }
+            }}
             />
-          </form>
         </div>
       </div>
       {input ? (
