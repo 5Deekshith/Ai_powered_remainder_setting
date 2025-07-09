@@ -1,7 +1,7 @@
 import type { Reminder } from '../types/app';
 
 export const getReminders = async (): Promise<Reminder[]> => {
-  const response = await fetch('http://localhost:8000/reminders');
+  const response = await fetch('https://ai-powered-remainder-setting.onrender.com/reminders');
   if (!response.ok) {
     throw new Error('Failed to fetch reminders');
   }
@@ -9,7 +9,7 @@ export const getReminders = async (): Promise<Reminder[]> => {
 };
 
 export const toggleReminderCompletion = async (id: string): Promise<Reminder> => {
-  const response = await fetch(`http://localhost:8000/reminders/${id}`, {
+  const response = await fetch(`https://ai-powered-remainder-setting.onrender.com/reminders/${id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
