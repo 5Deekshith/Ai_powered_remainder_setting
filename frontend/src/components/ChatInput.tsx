@@ -38,7 +38,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
 
   return (
     <div ref={wrapperRef} className="bg-gray-100 px-4 py-2 flex items-center">
-      <Paperclip className="text-gray-400 cursor-pointer" />
+      
       <div className="flex-grow mx-4 relative">
         <div className="w-full bg-white rounded-md p-2 shadow-inner">
           <div className="flex justify-between px-4 py-1 text-black font-bold border-b border-gray-300">
