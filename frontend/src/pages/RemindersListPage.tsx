@@ -80,18 +80,18 @@ const RemindersListPage = () => {
   const displayedReminders = showLongTerm ? longTermReminders : shortTermReminders;
 
   // Map connectionStatus to user-friendly text and color
-  const statusText = {
-    CONNECTING: 'Connecting...',
-    OPEN: 'Connected',
-    CLOSED: 'Disconnected',
-    ERROR: 'Error'
-  };
-  const statusColor = {
-    CONNECTING: 'text-yellow-500',
-    OPEN: 'text-green-500',
-    CLOSED: 'text-red-500',
-    ERROR: 'text-red-500'
-  };
+  // const statusText = {
+  //   CONNECTING: 'Connecting...',
+  //   OPEN: 'Connected',
+  //   CLOSED: 'Disconnected',
+  //   ERROR: 'Error'
+  // };
+  // const statusColor = {
+  //   CONNECTING: 'text-yellow-500',
+  //   OPEN: 'text-green-500',
+  //   CLOSED: 'text-red-500',
+  //   ERROR: 'text-red-500'
+  // };
 
   return (
     <div className="bg-wa-chat-bg h-full flex flex-col">
