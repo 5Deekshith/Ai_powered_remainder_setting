@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import type { Message, NotificationToast } from './types/app';
 import { useWebSocket } from '../../frontend/src/hooks/useWebSocket';
 import ChatPage from './pages/ChatPage';
