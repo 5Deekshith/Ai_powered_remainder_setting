@@ -79,20 +79,7 @@ const RemindersListPage = () => {
   // Show short-term reminders by default, long-term when toggled
   const displayedReminders = showLongTerm ? longTermReminders : shortTermReminders;
 
-  // Map connectionStatus to user-friendly text and color
-  // const statusText = {
-  //   CONNECTING: 'Connecting...',
-  //   OPEN: 'Connected',
-  //   CLOSED: 'Disconnected',
-  //   ERROR: 'Error'
-  // };
-  // const statusColor = {
-  //   CONNECTING: 'text-yellow-500',
-  //   OPEN: 'text-green-500',
-  //   CLOSED: 'text-red-500',
-  //   ERROR: 'text-red-500'
-  // };
-
+  
   return (
     <div className="bg-wa-chat-bg h-full flex flex-col">
       <header className="bg-wa-green-light p-4 text-white flex items-center">
@@ -135,7 +122,7 @@ const RemindersListPage = () => {
             aria-label="Clear all reminders"
             disabled={loading}
           >
-            <Trash2 size={20} className="sm:size-18" />
+            <Trash2 size={30} className="sm:size-19" />
           </button>
         )}
       </main>
