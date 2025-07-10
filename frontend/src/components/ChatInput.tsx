@@ -50,6 +50,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
             ref={textareaRef}
             rows={isFocused ? undefined : 2}
             style={isFocused ? { height: '50vh' } : { height: 'auto' }}
+            
+          
+            
             className="w-full px-4 py-4 border-none focus:outline-none placeholder-gray-400 bg-transparent mt-1 font-san-sarif text-md"
             placeholder="WorkList / Reminders / Patient info"
             value={input}

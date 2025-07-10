@@ -11,8 +11,8 @@ const ChatHeader: React.FC = () => (
         className="rounded-full w-10 h-10 mr-3"
       />
       <div>
-        <h2 className="font-semibold text-slate-600">Patient-01</h2>
-        <p className="text-xs text-wa-text-light">online</p>
+        <h2 className="font-semibold text-slate-600">Kamalamma</h2>
+      
       </div>
     </div>
     <div className="flex items-center space-x-5 text-wa-text-light">

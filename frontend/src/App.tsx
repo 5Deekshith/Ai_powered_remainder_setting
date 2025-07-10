@@ -5,7 +5,7 @@ import { useWebSocket } from '../../frontend/src/hooks/useWebSocket';
 import ChatPage from './pages/ChatPage';
 import RemindersListPage from './pages/RemindersListPage';
 import Toast from './components/Toast';
-import { Bell } from 'lucide-react';
+//import { Bell } from 'lucide-react';
 
 function App() {
   const [messages, setMessages] = useState<Message[]>([
@@ -59,7 +59,7 @@ function App() {
           {notification && <Toast task={notification.task} onClose={() => setNotification(null)} />}
           <div className="absolute top-2 right-2 md:right-[-50px] z-20">
             <Link to="/reminders" className="bg-white p-3 rounded-full shadow-lg block">
-              <Bell className="text-wa-green-light" />
+              
             </Link>
           </div>
           <Routes>
