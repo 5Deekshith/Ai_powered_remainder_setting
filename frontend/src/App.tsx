@@ -57,11 +57,7 @@ function App() {
       <div className="w-full max-w-lg h-full md:h-[95vh] md:max-h-[1024px] bg-white shadow-2xl flex flex-col">
         <BrowserRouter>
           {notification && <Toast task={notification.task} onClose={() => setNotification(null)} />}
-          <div className="absolute top-2 right-2 md:right-[-50px] z-20">
-            <Link to="/reminders" className="bg-white p-3 rounded-full shadow-lg block">
-              
-            </Link>
-          </div>
+          
           <Routes>
             <Route path="/" element={<ChatPage messages={messages} onSendMessage={handleSendMessage} />} />
             <Route path="/reminders" element={<RemindersListPage />} />

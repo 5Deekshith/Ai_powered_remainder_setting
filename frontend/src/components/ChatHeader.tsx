@@ -1,4 +1,4 @@
-import { Bell } from 'lucide-react';
+import {Bell } from 'lucide-react';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -11,7 +11,7 @@ const ChatHeader: React.FC = () => (
         className="rounded-full w-10 h-10 mr-3"
       />
       <div>
-        <h2 className="font-semibold text-slate-600">Kamalamma</h2>
+        <h2 className="font-semibold text-slate-600">Kamalamma, 72y</h2>
       
       </div>
     </div>

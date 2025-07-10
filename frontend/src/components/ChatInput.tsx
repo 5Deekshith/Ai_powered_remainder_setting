@@ -42,9 +42,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
       <div className="flex-grow mx-4 relative">
         <div className="w-full bg-white rounded-md p-2 shadow-inner">
           <div className="flex justify-between px-4 py-1  text-gray-500 font-bold border-b border-gray-300 ">
-            <span>Patient-01</span>
-            <span>32y</span>
-            <span>PAT123456</span>
+            <span>Kamalamma</span>
+            <span>72y</span>
+            <span>PT123456</span>
           </div>
           <textarea
             ref={textareaRef}
