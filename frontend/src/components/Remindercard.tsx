@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { format } from 'date-fns';
 import type { Reminder } from '../types/app';
 import { Calendar, Clock, CheckCircle, Circle } from 'lucide-react';
@@ -6,17 +6,11 @@ import { toggleReminderCompletion } from '../api/client';
 
 interface ReminderCardProps {
   reminder: Reminder;
-  onUpdate: () => void;
 }
 
-const ReminderCard: React.FC<ReminderCardProps> = ({ reminder, onUpdate }) => {
+const ReminderCard: React.FC<ReminderCardProps> = ({ reminder }) => {
   const [isToggling, setIsToggling] = useState(false);
   const [localCompleted, setLocalCompleted] = useState(reminder.completed);
-
-  // Keep in sync when the parent updates reminders (e.g., after refresh)
-  useEffect(() => {
-    setLocalCompleted(reminder.completed);
-  }, [reminder.completed]);
 
   const formattedDateTime = format(
     new Date(reminder.reminder_time),
@@ -24,15 +18,15 @@ const ReminderCard: React.FC<ReminderCardProps> = ({ reminder, onUpdate }) => {
   );
 
   const handleToggleComplete = async () => {
+    if (isToggling) return;
     const newStatus = !localCompleted;
-    setLocalCompleted(newStatus); // Optimistic UI toggle
+    setLocalCompleted(newStatus); // UI toggle
     setIsToggling(true);
     try {
-      await toggleReminderCompletion(reminder._id); // Backend flip
-      onUpdate(); // Refresh data from backend
+      await toggleReminderCompletion(reminder._id); // Update backend
     } catch (error) {
       console.error('Toggle error:', error);
-      setLocalCompleted(!newStatus); // Revert if error
+      setLocalCompleted(!newStatus); // Revert UI if backend fails
     } finally {
       setIsToggling(false);
     }
