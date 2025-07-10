@@ -84,7 +84,7 @@ Now extract from:
 """
 
 async def process_message_for_reminder(message: str, websocket):
-    keywords = ["reminder", "remind me", "set reminder", "worklist remind me"]
+    keywords = ["reminder", "remind me", "set reminder", "worklist", "today", "tomorrow", "collect", "post", "send", "remove", "explain", "check", "follow up", "review", "schedule", "notify", "alert"]
     if not any(k in message.lower() for k in keywords):
         await websocket.send_json({"type": "error", "message": "Please use keywords like 'remind me'"})
         return
@@ -95,7 +95,7 @@ async def process_message_for_reminder(message: str, websocket):
 
     try:
         response = client.chat(
-            model="mistral-small",
+            model="mistral-large-latest",
             messages=[ChatMessage(role="user", content=build_prompt(message))],
             response_format={"type": "json_object"}
         )
