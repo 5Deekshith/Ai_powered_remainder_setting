@@ -48,8 +48,8 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
 
   return (
     <div ref={wrapperRef} className={containerClasses}>
-      <div className="flex-grow mr-4 relative">
-        <div className="w-full bg-white rounded-md p-2 shadow-inner flex flex-col">
+      <div className="flex-grow mr-0 relative">
+        <div className="w-full bg-white rounded-md p-0 ml-0 shadow-inner flex flex-col">
           <div className="flex justify-between px-4 py-1 text-gray-500 font-bold border-b border-gray-300 ">
             <span>Kamalamma</span>
             <span>72y</span>
@@ -89,7 +89,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
         <button
           onClick={handleAddBulletPoint}
           // 4. Changed to rounded-full and adjusted padding
-          className="bg-gray-200 p-3 text-gray-600 rounded-full hover:bg-gray-300"
+          className="bg-gray-200 p-3  text-gray-600 rounded-full hover:bg-gray-300"
           aria-label="Add bullet point"
         >
           <List size={20} />
