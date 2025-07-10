@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 
-const WS_URL = 'https://ai-powered-remainder-setting.onrender.com/ws';
+const WS_URL = 'wss://ai-powered-remainder-setting.onrender.com/ws';
 
 export const useWebSocket = (onMessage: (data: any) => void) => {
   const socketRef = useRef<WebSocket | null>(null);
@@ -34,6 +34,7 @@ export const useWebSocket = (onMessage: (data: any) => void) => {
     socket.onmessage = (event) => {
       try {
         const parsedData = JSON.parse(event.data);
+        console.log('WebSocket message received:', parsedData);
         onMessage(parsedData);
       } catch (error) {
         console.error('Failed to parse WebSocket message:', event.data, error);

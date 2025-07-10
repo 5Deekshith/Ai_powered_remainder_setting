@@ -1,18 +1,13 @@
-import {Bell } from 'lucide-react';
+import { Bell, User } from 'lucide-react';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
 const ChatHeader: React.FC = () => (
   <header className="bg-wa-chat-bg p-3 flex justify-between items-center border-b border-slate-700">
     <div className="flex items-center">
-      <img
-        src="/src/assets/image.png" // Placeholder avatar
-        alt="Avatar"
-        className="rounded-full w-10 h-10 mr-3"
-      />
+      <User className="rounded-full w-6 h-8  mr-3 text-wa-text-light" />
       <div>
         <h2 className="font-semibold text-slate-600">Kamalamma, 72y</h2>
-      
       </div>
     </div>
     <div className="flex items-center space-x-5 text-wa-text-light">
