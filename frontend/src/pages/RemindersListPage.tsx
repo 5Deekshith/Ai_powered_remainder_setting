@@ -135,7 +135,7 @@ const RemindersListPage = () => {
             aria-label="Clear all reminders"
             disabled={loading}
           >
-            <Trash2 size={16} className="sm:size-18" />
+            <Trash2 size={20} className="sm:size-18" />
           </button>
         )}
       </main>
