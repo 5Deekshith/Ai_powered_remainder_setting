@@ -41,7 +41,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
       
       <div className="flex-grow mx-4 relative">
         <div className="w-full bg-white rounded-md p-2 shadow-inner">
-          <div className="flex justify-between px-4 py-1  text-black font-bold border-b border-gray-300">
+          <div className="flex justify-between px-4 py-1  text-black font-bold border-b border-gray-300 ">
             <span>Patient-01</span>
             <span>32y</span>
             <span>PAT123456</span>
@@ -50,7 +50,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
             ref={textareaRef}
             rows={isFocused ? undefined : 2}
             style={isFocused ? { height: '50vh' } : { height: 'auto' }}
-            className="w-full px-4 py-2 border-none focus:outline-none placeholder-gray-400 bg-transparent mt-1 font-san-sarif text-md"
+            className="w-full px-4 py-4 border-none focus:outline-none placeholder-gray-400 bg-transparent mt-1 font-san-sarif text-md"
             placeholder="WorkList / Reminders / Patient info"
             value={input}
             onChange={(e) => setInput(e.target.value)}
