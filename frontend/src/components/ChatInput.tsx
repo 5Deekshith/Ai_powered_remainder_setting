@@ -1,4 +1,4 @@
-import { Paperclip, Send } from 'lucide-react';
+import { Send } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
 interface ChatInputProps {
