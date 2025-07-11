@@ -37,12 +37,12 @@ MEDICAL TASK CATEGORIES TO DETECT:
 
 TIMING RULES:
 1. **"Today" Scheduling** (based on current time):
-   - 00:00-10:59 AM → Remind at 1:00 PM same day
-   - 11:00 AM-3:59 PM → Remind at 4:00 PM same day
+   - 06:00-12:59 AM → Remind at 1:00 PM same day
+   - 1:00 AM-3:59 PM → Remind at 4:00 PM same day
    - 4:00 PM-7:59 PM → Remind at 8:00 PM same day
    - 8:00 PM+ → Remind at 1:00 PM next day
 
-2. **"Tomorrow" Scheduling**: Always 1:00 PM next calendar day
+2. **"Tomorrow" Scheduling**: Always 6:00 AM next calendar day
 
 3. **Relative Time Calculation**: Calculate exact future time from current time
    - "in 2 hours" → current_time + 2 hours
