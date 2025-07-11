@@ -11,85 +11,192 @@ client = MistralClient(api_key=os.getenv("MISTRAL_API_KEY"))
 INDIA_TZ = pytz.timezone("Asia/Kolkata")
 
 def build_prompt(message: str) -> str:
-    # This prompt is unchanged and correct.
+   
     return f"""
-Extract a JSON array of objects, where each object has exactly two fields: "task" and "duration".
-- "task": What the user should be reminded about (example: "check the hand").
-- "duration": When to remind them from now (example: "1 hour", "3 minutes", "30 seconds", "2 days").
-- Each task in the input should correspond to one object in the output array.
-- Only support the following duration units: seconds, minutes, hours, days.
-- Use lowercase for units in the output.
-- Do NOT return absolute times like "5:30 PM" or "July 8".
-- If no duration is given for a task, default to "1 hour".
-- If the input is unclear or contains no valid tasks, return an empty array.
-- Handle variations like "to", "for", or "after" in the input gracefully.
-- For multiple tasks, extract each task and its corresponding duration.
-- If a duration is malformed, use "1 hour" for that task.
-Input: "set reminder after 3 minutes to check BP and 2 hours to check sugar"
-Output: [{{"task": "check BP", "duration": "3 minutes"}}, {{"task": "check sugar", "duration": "2 hours"}}]
- If the user says "today", "morning", "evening" or implies the current day, use the doctor's standard schedule based on the CURRENT TIME:
-    - If the CURRENT TIME is between 00:00 and 10:59 AM, set the reminder for 1:00 PM (13:00) on the same day.
-    - If the CURRENT TIME is between 11:00 AM and 3:59 PM (15:59), set the reminder for 4:00 PM (16:00) on the same day.
-    - If the CURRENT TIME is between 4:00 PM (16:00) and 7:59 PM (19:59), set the reminder for 8:00 PM (20:00) on the same day.
-    - If the CURRENT TIME is 8:00 PM (20:00) or later, set the reminder for 1:00 PM (13:00) the NEXT day.
+MEDICAL TASK EXTRACTION SYSTEM
 
-2.  **Rule for "tomorrow" keyword:**
-    If the user says "tomorrow", set the reminder for 1:00 PM (13:00) on the NEXT calendar day.
+You are an AI assistant specialized in extracting medical tasks and reminders from doctor's chat messages. 
+Your role is to automatically identify actionable medical tasks and schedule appropriate reminders
 
-3.  **Rule for Relative Times:**
-    If the user gives a relative time like "after 2 hours", "in 30 minutes", "after 3 days", calculate the exact time from the CURRENT TIME.
+CORE RULES:
+1. **Automatic Task Detection**: Extract tasks from ANY medical instruction, order, or note - even without explicit "remind me" keywords
+2. **Medical Context Priority**: Focus ONLY on medical tasks, procedures, patient care instructions, and clinical activities
+3. **Chat-Specific Extraction**: Only extract tasks from the current chat message, ignore other conversations
+4. **Actionable Items Only**: Extract tasks that require future action, follow-up, or monitoring
 
-4.  **Default Rule (No Time Specified):**
-    If a task is mentioned but has NO time information (e.g., "Explain patient party about cost consent"), set the reminder for exactly 1 hour from the CURRENT TIME.
+MEDICAL TASK CATEGORIES TO DETECT:
+- Laboratory orders (blood work, cultures, imaging)
+- Medication administration or changes
+- Patient monitoring (vitals, symptoms, drainage)
+- Procedure scheduling (surgery, interventions)
+- Follow-up appointments or consultations
+- Patient education or counseling
+- Equipment management (catheters, drains, devices)
+- Discharge planning activities
+- Clinical documentation requirements
 
-5.  **Task Extraction & Medical Shorthand:**
-    - The "task" description should be complete.
-    - Understand medical abbreviations:
-      - OT: Operation Theatre
-      - Hb: Hemoglobin
-      - Tc: Total Count
-      - S.Creat: Serum Creatinine
-      - DM: Diabetes Mellitus
-      - Foleys: Foley's Catheter
+TIMING RULES:
+1. **"Today" Scheduling** (based on current time):
+   - 00:00-10:59 AM → Remind at 1:00 PM same day
+   - 11:00 AM-3:59 PM → Remind at 4:00 PM same day
+   - 4:00 PM-7:59 PM → Remind at 8:00 PM same day
+   - 8:00 PM+ → Remind at 1:00 PM next day
 
---- EXAMPLES ---
+2. **"Tomorrow" Scheduling**: Always 1:00 PM next calendar day
 
-- Current Time: 2024-07-09T10:30:00+05:30
-- Input: "Collect blood and urine culture today. And post for SETON removal tomorrow in OT 7"
-- Output: [
-    {{"task": "Collect blood and urine culture", "remind_at": "2024-07-09T13:00:00+05:30"}},
-    {{"task": "Post for SETON removal in OT 7", "remind_at": "2024-07-10T13:00:00+05:30"}}
-  ]
+3. **Relative Time Calculation**: Calculate exact future time from current time
+   - "in 2 hours" → current_time + 2 hours
+   - "after 30 minutes" → current_time + 30 minutes
+   - "in 3 days" → current_time + 3 days
 
-- Current Time: 2024-07-09T14:00:00+05:30
-- Input: "remind me to check sugars after two hours. also send Hb, Tc, S.Creat today"
-- Output: [
-    {{"task": "check sugars", "remind_at": "2024-07-09T16:00:00+05:30"}},
-    {{"task": "Send Hb, Tc, S.Creat", "remind_at": "2024-07-09T16:00:00+05:30"}}
-  ]
+4. **Default Timing**: If no time specified, set reminder for 1 hour from current time
 
-- Current Time: 2024-07-09T09:00:00+05:30
-- Input: "Remove Foleys after clamping"
-- Output: [{{"task": "Remove Foleys after clamping", "remind_at": "2024-07-09T10:00:00+05:30"}}]
+5. **Urgent Tasks**: For critical tasks without time, set reminder for 15 minutes from current time
 
-- Current Time: 2024-07-09T21:00:00+05:30
-- Input: "check BP today"
-- Output: [{{"task": "check BP", "remind_at": "2024-07-10T13:00:00+05:30"}}]
-# This is the prompt used to extract tasks and durations from user messages.
-# It captures the current time in the user's timezone and uses it to calculate future reminder times.
-# The output is a JSON array of objects with "task" and "duration" fields.
-# The prompt also includes rules for handling specific keywords like "today", "tomorrow", and relative times.
-Now extract from:
+MEDICAL ABBREVIATIONS DICTIONARY:
+- OT: Operation Theatre
+- Hb: Hemoglobin
+- Tc: Total Count (WBC count)
+- S.Creat: Serum Creatinine
+- DM: Diabetes Mellitus
+- HTN: Hypertension
+- Foleys: Foley's Catheter
+- BP: Blood Pressure
+- HR: Heart Rate
+- RR: Respiratory Rate
+- O2 Sat: Oxygen Saturation
+- IV: Intravenous
+- IM: Intramuscular
+- PO: Per Oral (by mouth)
+- PRN: As needed
+- QID: Four times daily
+- TID: Three times daily
+- BID: Twice daily
+- NPO: Nothing by mouth
+- DVT: Deep Vein Thrombosis
+- ICU: Intensive Care Unit
+- CCU: Coronary Care Unit
+- ECG/EKG: Electrocardiogram
+- CT: Computed Tomography
+- MRI: Magnetic Resonance Imaging
+- X-ray: Radiograph
+
+TASK EXTRACTION PATTERNS:
+- Action verbs: collect, send, check, monitor, review, schedule, remove, insert, administer, prescribe
+- Medical procedures: surgery, biopsy, endoscopy, catheterization
+- Lab orders: blood work, cultures, imaging studies
+- Patient care: positioning, feeding, medication, wound care
+- Documentation: consent, notes, reports, discharge summary
+
+OUTPUT FORMAT:
+Return a JSON array of objects with exactly these fields:
+- "task": Clear, complete description of the medical task
+- "remind_at": ISO datetime string with timezone (+05:30 for IST)
+- "priority": "high", "medium", or "low" based on clinical urgency
+- "category": Medical category (lab, medication, procedure, monitoring, etc.)
+
+EXAMPLES:
+
+Current Time: 2024-07-09T10:30:00+05:30
+Input: "Patient in bed 5 needs blood culture and urine culture collected today. Schedule for SETON removal tomorrow in OT 7"
+Output: [
+    {{
+        "task": "Collect blood culture and urine culture for patient in bed 5",
+        "remind_at": "2024-07-09T13:00:00+05:30",
+        "priority": "high",
+        "category": "lab"
+    }},
+    {{
+        "task": "Schedule SETON removal in OT 7",
+        "remind_at": "2024-07-10T13:00:00+05:30",
+        "priority": "medium",
+        "category": "procedure"
+    }}
+]
+
+Current Time: 2024-07-09T14:00:00+05:30
+Input: "Check patient's sugars after two hours. Send Hb, Tc, S.Creat today"
+Output: [
+    {{
+        "task": "Check patient's blood sugar levels",
+        "remind_at": "2024-07-09T16:00:00+05:30",
+        "priority": "medium",
+        "category": "monitoring"
+    }},
+    {{
+        "task": "Send Hb, Tc, S.Creat lab orders",
+        "remind_at": "2024-07-09T16:00:00+05:30",
+        "priority": "medium",
+        "category": "lab"
+    }}
+]
+
+Current Time: 2024-07-09T09:00:00+05:30
+Input: "Remove Foleys after clamping for 4 hours"
+Output: [
+    {{
+        "task": "Remove Foley's catheter after clamping",
+        "remind_at": "2024-07-09T10:00:00+05:30",
+        "priority": "high",
+        "category": "procedure"
+    }}
+]
+
+Current Time: 2024-07-09T21:00:00+05:30
+Input: "Monitor BP every 2 hours overnight"
+Output: [
+    {{
+        "task": "Monitor blood pressure every 2 hours overnight",
+        "remind_at": "2024-07-09T23:00:00+05:30",
+        "priority": "high",
+        "category": "monitoring"
+    }}
+]
+
+IMPORTANT NOTES:
+- Extract ALL actionable medical tasks, even without explicit reminder keywords
+- Prioritize patient safety and clinical urgency
+- Use complete, clear task descriptions
+- Include patient identifiers when mentioned (bed number, name, etc.)
+- Consider medical context and standard protocols
+- Handle multiple tasks in a single message
+- Ignore non-medical conversations or casual chat
+
+Now extract medical tasks from this message:
 "{message}"
 """
 
 async def process_message_for_reminder(message: str, websocket):
-    keywords = ["reminder", "remind me", "set reminder", "worklist", "today", "tomorrow", "collect", "post", "send", "remove", "explain", "check", "follow up", "review", "schedule", "notify", "alert"]
+    keywords = ["collect", "send", "check", "monitor", "review", "schedule", "remove", "insert",
+        "administer", "prescribe", "order", "request", "obtain", "perform", "conduct",
+        
+
+        "surgery", "operation", "biopsy", "endoscopy", "catheterization", "intubation",
+        "extubation", "tracheostomy", "dialysis", "chemotherapy", "radiotherapy",
+        
+
+        "blood work", "lab", "culture", "biopsy", "x-ray", "ct", "mri", "ultrasound",
+        "ecg", "ekg", "echo", "stress test", "holter", "eeg", "emg",
+        
+
+        "medication", "dose", "infusion", "injection", "wound care", "dressing",
+        "positioning", "feeding", "nutrition", "hydration", "oxygen", "ventilator",
+        
+   
+        "today", "tomorrow", "after", "in", "before", "by", "at", "every", "hourly",
+        "daily", "weekly", "morning", "afternoon", "evening", "night", "overnight",
+        
+  
+        "ot", "icu", "ccu", "er", "or", "pacu", "hb", "tc", "creat", "bp", "hr",
+        "rr", "o2", "spo2", "foleys", "iv", "im", "po", "prn", "qid", "tid", "bid",
+        
+        "consent", "discharge", "transfer", "admit", "notes", "report", "summary",
+        "assessment", "plan", "follow-up", "consultation", "referral"]
     if not any(k in message.lower() for k in keywords):
         await websocket.send_json({"type": "error", "message": "Please use keywords like 'remind me'"})
         return
 
-    # STEP 1: Capture the current "live" time in the user's timezone.
+
     base_time = datetime.now(INDIA_TZ)
     print(f"[Live Time Captured]: {base_time.isoformat()}")
 
@@ -129,17 +236,13 @@ async def process_message_for_reminder(message: str, websocket):
         try:
             db = get_database()
             
-            # =========================================================================
-            # == EXPLICIT ISO 8601 CONVERSION ==
-            # 1. Convert the calculated local time to UTC.
-            # 2. Format it as an ISO 8601 string. The 'Z' indicates UTC.
-            # =========================================================================
+      
             reminder_time_utc = reminder_time_local.astimezone(pytz.utc)
             iso_timestamp_string = reminder_time_utc.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
             
             db.reminders.insert_one({
                 "task": task,
-                "reminder_time": iso_timestamp_string, # Store the string
+                "reminder_time": iso_timestamp_string, 
                 "completed": False
             })
             print(f"[DB Saved as ISO String]: {task} → {iso_timestamp_string}")
